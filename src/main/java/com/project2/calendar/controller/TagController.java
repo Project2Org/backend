@@ -1,10 +1,14 @@
 package com.project2.calendar.controller;
 
 import com.project2.calendar.entity.Tag;
+import com.project2.calendar.entity.User;
 import com.project2.calendar.repository.TagRepository;
+import com.project2.calendar.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tags")
@@ -13,10 +17,18 @@ public class TagController {
     @Autowired
     private TagRepository tagRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     // Create Tag
-    // TODO: Need user id to store in column
     @PostMapping
-    public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
+    public ResponseEntity<Tag> createTag(@RequestBody Tag tag, @RequestParam Long userId) {
+        User owner = userRepository.findById(userId)
+                .orElse(null);
+        if (owner == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        tag.setOwner(owner);
         Tag saved = tagRepository.save(tag);
         return ResponseEntity.ok(saved);
     }
@@ -29,11 +41,17 @@ public class TagController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // TODO: Retrieve all tags created by a user
-//    @GetMapping("/{ownerID}")
-//    public ResponseEntity<Tag> findAllByUser(@PathVariable User user) {
-//        return
-//    }
+    // Retrieve all tags belonging to a user
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Tag>> getTagsByUser(@PathVariable Long userId) {
+        User owner = userRepository.findById(userId)
+                .orElse(null);
+        if (owner == null) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Tag> tags = tagRepository.findAllByOwner(owner);
+        return ResponseEntity.ok(tags);
+    }
 
     // Delete Tag
     @DeleteMapping("/{id}")

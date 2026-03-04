@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
     // Optional<> tells java that this may not exist
-    Optional<Tag> findByName(String Name);
-    List<Tag> findAllByUser(User user);
+    Optional<Tag> findByName(String name);
+    List<Tag> findAllByOwner(User owner);
 }
