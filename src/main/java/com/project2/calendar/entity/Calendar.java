@@ -28,6 +28,6 @@ public class Calendar {
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
 
-    public long getOwner() { return owner; }
+    public User getOwner() { return owner; }
     public void setOwner(User owner) { this.owner = owner; }
 }

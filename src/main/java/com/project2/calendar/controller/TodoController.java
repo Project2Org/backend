@@ -24,13 +24,14 @@ public class TodoController {
     private UserRepository userRepository;
 
     private User currentUser(Jwt jwt) {
-        String sub = jwt.getSubject();
-        return userRepository.findBySupabaseId(sub).orElseGet(() -> {
-            User u = new User();
-            u.setSupabaseId(sub);
-            return userRepository.save(u);
-        });
-    }
+    String sub = jwt.getSubject();
+    return userRepository.findBySupabaseId(sub).orElseGet(() -> {
+        User u = new User();
+        u.setSupabaseId(sub);
+        u.setUsername("");  // satisfy the not-null constraint
+        return userRepository.save(u);
+    });
+}
 
     // GET /api/todos  or  GET /api/todos?date=YYYY-MM-DD
     @GetMapping
