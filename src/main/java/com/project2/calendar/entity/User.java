@@ -11,17 +11,24 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "supabase_id", nullable = false, unique = true)
+    private String supabaseId;
+
+    @Column(unique = true, nullable = true)
     private String username;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public String getSupabaseId() { return supabaseId; }
+    public void setSupabaseId(String supabaseId) { this.supabaseId = supabaseId; }
+
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
+
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
 }

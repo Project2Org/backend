@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    // Optional<> tells java that this may not exist
+
     Optional<User> findByUsername(String username);
+
+    Optional<User> findBySupabaseId(String supabaseId);
 }
