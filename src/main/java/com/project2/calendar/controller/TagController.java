@@ -23,14 +23,14 @@ public class TagController {
   private UserRepository userRepository;
 
   private User currentUser(Jwt jwt) {
-    String sub = jwt.getSubject(); // Supabase user id (UUID)
-
+    String sub = jwt.getSubject();
     return userRepository.findBySupabaseId(sub).orElseGet(() -> {
-      User u = new User();
-      u.setSupabaseId(sub);
-      return userRepository.save(u);
+        User u = new User();
+        u.setSupabaseId(sub);
+        u.setUsername("");  // satisfy the not-null constraint
+        return userRepository.save(u);
     });
-  }
+}
 
   @PostMapping
   public ResponseEntity<Tag> createTag(
