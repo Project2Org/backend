@@ -28,7 +28,7 @@ public class TodoController {
     return userRepository.findBySupabaseId(sub).orElseGet(() -> {
         User u = new User();
         u.setSupabaseId(sub);
-        u.setUsername("");  // satisfy the not-null constraint
+        u.setUsername(null);
         return userRepository.save(u);
     });
 }
