@@ -21,6 +21,12 @@ public class CalendarController {
         return ResponseEntity.ok(saved);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Calendar>> getAllCalendars() {
+        List<Calendar> calendars = calendarService.getAllCalendars();
+        return ResponseEntity.ok(calendars);
+    }
+
     // Get Calendar by ID
     @GetMapping("/{id}")
     public ResponseEntity<Calendar> getCalendarById(@PathVariable Long id) {
