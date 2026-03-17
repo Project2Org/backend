@@ -1,7 +1,6 @@
 package com.project2.calendar.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -22,11 +21,16 @@ public class Event {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "date")
-    private LocalDate date;
+    // Stored as YYYY-MM-DD string
+    @Column(name = "date", columnDefinition = "varchar")
+    private String date;
 
-    @Column(name = "time")
-    private OffsetDateTime time;
+    // Stored as "HH:mm" strings (e.g. "09:00")
+    @Column(name = "time", columnDefinition = "varchar")
+    private String time;
+
+    @Column(name = "end_time", columnDefinition = "varchar")
+    private String endTime;
 
     @Column(name = "description")
     private String description;
@@ -35,7 +39,7 @@ public class Event {
     private String location;
 
     /*=================
-    Getters and Setters Below
+    Getters and Setters
     =================*/
 
     public Long getId() { return id; }
@@ -50,16 +54,18 @@ public class Event {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
-    public LocalDate getDate() { return date; }
-    public void setDate(LocalDate date) { this.date = date; }
+    public String getDate() { return date; }
+    public void setDate(String date) { this.date = date; }
 
-    public OffsetDateTime getTime() { return time; }
-    public void setTime(OffsetDateTime time) { this.time = time; }
+    public String getTime() { return time; }
+    public void setTime(String time) { this.time = time; }
+
+    public String getEndTime() { return endTime; }
+    public void setEndTime(String endTime) { this.endTime = endTime; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
-
 }
