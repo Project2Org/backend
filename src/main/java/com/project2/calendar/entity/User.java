@@ -20,6 +20,9 @@ public class User {
     @Column(name = "created_at")
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
+    @Column(name = "is_admin", nullable = false)
+    private boolean isAdmin = false;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -31,4 +34,8 @@ public class User {
 
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public boolean isAdmin() { return isAdmin; }
+
+    public void setAdmin(boolean admin) { isAdmin = admin; }
 }
