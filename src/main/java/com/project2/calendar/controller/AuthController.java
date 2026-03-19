@@ -11,7 +11,7 @@ import java.util.Map;
 @RestController
 public class AuthController {
 
-  @GetMapping("/me")
+  @GetMapping("/api/me")
   public ResponseEntity<?> me(@AuthenticationPrincipal Jwt jwt) {
     String supabaseUserId = jwt.getSubject();
     String email = jwt.getClaimAsString("email");
