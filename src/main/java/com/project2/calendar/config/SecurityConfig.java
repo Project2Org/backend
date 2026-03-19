@@ -29,7 +29,7 @@ public class SecurityConfig {
       .cors(Customizer.withDefaults())
       .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(auth -> auth
-      .requestMatchers("/api/**", "/users/**", "/tags/**", "/me").authenticated()
+      .requestMatchers("/api/**").authenticated()
       .anyRequest().permitAll()
       )
       .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
