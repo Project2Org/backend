@@ -4,6 +4,9 @@ import com.project2.calendar.entity.Tag;
 import com.project2.calendar.entity.User;
 import com.project2.calendar.repository.TagRepository;
 import com.project2.calendar.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -14,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tags")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Tags", description = "Create and manage event tags for the authenticated user")
 public class TagController {
 
   @Autowired
@@ -30,8 +34,13 @@ public class TagController {
         u.setUsername("");  // satisfy the not-null constraint
         return userRepository.save(u);
     });
-}
+  }
 
+  @Operation(summary = "Create a tag", description = "Creates a new tag owned by the authenticated user.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Tag created successfully"),
+      @ApiResponse(responseCode = "401", description = "Unauthorized")
+  })
   @PostMapping
   public ResponseEntity<Tag> createTag(
       @RequestBody Tag tag,
@@ -43,6 +52,12 @@ public class TagController {
     return ResponseEntity.ok(saved);
   }
 
+  @Operation(summary = "Get tag by ID", description = "Returns a tag by ID. Returns 404 if not found or owned by another user.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Tag returned successfully"),
+      @ApiResponse(responseCode = "401", description = "Unauthorized"),
+      @ApiResponse(responseCode = "404", description = "Tag not found or not owned by user")
+  })
   @GetMapping("/{id}")
   public ResponseEntity<Tag> getTagById(
       @PathVariable Long id,
@@ -56,6 +71,11 @@ public class TagController {
         .orElse(ResponseEntity.notFound().build());
   }
 
+  @Operation(summary = "Get my tags", description = "Returns all tags belonging to the authenticated user.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "List returned successfully"),
+      @ApiResponse(responseCode = "401", description = "Unauthorized")
+  })
   @GetMapping("/me")
   public ResponseEntity<List<Tag>> getMyTags(@AuthenticationPrincipal Jwt jwt) {
     User owner = currentUser(jwt);
@@ -63,11 +83,17 @@ public class TagController {
     return ResponseEntity.ok(tags);
   }
 
+  @Operation(summary = "Delete a tag", description = "Deletes a tag by ID. Returns 404 if not found or owned by another user.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", description = "Tag deleted successfully"),
+      @ApiResponse(responseCode = "401", description = "Unauthorized"),
+      @ApiResponse(responseCode = "404", description = "Tag not found or not owned by user")
+  })
   @DeleteMapping("/{id}")
-public ResponseEntity<Void> deleteTag(
-    @PathVariable Long id,
-    @AuthenticationPrincipal Jwt jwt
-) {
+  public ResponseEntity<Void> deleteTag(
+      @PathVariable Long id,
+      @AuthenticationPrincipal Jwt jwt
+  ) {
     User owner = currentUser(jwt);
 
     Tag tag = tagRepository.findById(id).orElse(null);
@@ -79,5 +105,5 @@ public ResponseEntity<Void> deleteTag(
 
     tagRepository.delete(tag);
     return ResponseEntity.noContent().build();
-    }
+  }
 }
