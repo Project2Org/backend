@@ -19,20 +19,23 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
 
-  private static final String JWKS =
-    "https://vrpffqrwyuifthbvxyvf.supabase.co/auth/v1/.well-known/jwks.json";
+  private static final String JWKS = "https://vrpffqrwyuifthbvxyvf.supabase.co/auth/v1/.well-known/jwks.json";
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-      .csrf(csrf -> csrf.disable())
-      .cors(Customizer.withDefaults())
-      .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .authorizeHttpRequests(auth -> auth
-      .requestMatchers("/api/**").authenticated()
-      .anyRequest().permitAll()
-      )
-      .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+        .csrf(csrf -> csrf.disable())
+        .cors(Customizer.withDefaults())
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**")
+            .permitAll()
+            .requestMatchers("/api/**").authenticated()
+            .anyRequest().permitAll())
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
     return http.build();
   }
@@ -40,20 +43,19 @@ public class SecurityConfig {
   @Bean
   public JwtDecoder jwtDecoder() {
     return NimbusJwtDecoder
-      .withJwkSetUri(JWKS)
-      .jwsAlgorithm(SignatureAlgorithm.ES256)
-      .build();
+        .withJwkSetUri(JWKS)
+        .jwsAlgorithm(SignatureAlgorithm.ES256)
+        .build();
   }
 
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOrigins(List.of(
-      "http://localhost:5173",
-      "https://frontend-cwvc.onrender.com"
-    ));
-    config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-    config.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        "http://localhost:5173",
+        "https://frontend-cwvc.onrender.com"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
     config.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
