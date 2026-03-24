@@ -6,6 +6,10 @@ import com.project2.calendar.entity.User;
 import com.project2.calendar.repository.CalendarRepository;
 import com.project2.calendar.repository.EventRepository;
 import com.project2.calendar.repository.UserRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
+@Tag(name = "Events", description = "Create, retrieve, and delete calendar events for the authenticated user")
 public class EventController {
 
     @Autowired
@@ -57,6 +62,11 @@ public class EventController {
 
     // GET /api/events
     // Date can be used in query string YYYY-MM-DD
+    @Operation(summary = "Get all events", description = "Returns all events for the authenticated user. Optionally filter by date (YYYY-MM-DD).")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "List returned successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @GetMapping
     public ResponseEntity<List<Event>> getEvents(
             @RequestParam(required = false) String date,
@@ -73,6 +83,11 @@ public class EventController {
     }
 
     // POST /api/events
+    @Operation(summary = "Create an event", description = "Creates a new event attached to the authenticated user's default calendar.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Event created successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @PostMapping
     public ResponseEntity<Event> createEvent(
             @RequestBody Event event,
@@ -85,6 +100,12 @@ public class EventController {
     }
 
     // GET /api/events/{id}
+    @Operation(summary = "Get event by ID", description = "Returns a single event by ID. Returns 404 if not found or owned by another user.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Event returned successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "404", description = "Event not found or not owned by user")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(
             @PathVariable Long id,
@@ -101,6 +122,12 @@ public class EventController {
     }
 
     // DELETE /api/events/{id}
+    @Operation(summary = "Delete an event", description = "Deletes an event by ID. Returns 404 if not found or owned by another user.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Event deleted successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "404", description = "Event not found or not owned by user")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(
             @PathVariable Long id,
