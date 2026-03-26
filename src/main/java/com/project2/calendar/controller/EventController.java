@@ -99,6 +99,39 @@ public class EventController {
         return ResponseEntity.ok(eventRepository.save(event));
     }
 
+    // PUT /api/events/{id}
+    @Operation(summary = "Update an event", description = "Replaces an event entirely.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Event updated successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "404", description = "Event not found or not owned by user")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<Event> updateEvent(
+            @PathVariable Long id,
+            @RequestBody Event updated,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        User owner = currentUser(jwt);
+        Calendar cal = defaultCalendar(owner);
+
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null || event.getCalendar() == null ||
+                !event.getCalendar().getId().equals(cal.getId())) {
+            return ResponseEntity.notFound().build();
+        }
+
+        event.setTitle(updated.getTitle());
+        event.setDate(updated.getDate());
+        event.setTime(updated.getTime());
+        event.setEndTime(updated.getEndTime());
+        event.setDescription(updated.getDescription());
+        event.setLocation(updated.getLocation());
+
+        return ResponseEntity.ok(eventRepository.save(event));
+    }
+
+
     // GET /api/events/{id}
     @Operation(summary = "Get event by ID", description = "Returns a single event by ID. Returns 404 if not found or owned by another user.")
     @ApiResponses({

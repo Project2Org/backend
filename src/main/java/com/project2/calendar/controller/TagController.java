@@ -52,6 +52,32 @@ public class TagController {
     return ResponseEntity.ok(saved);
   }
 
+    // PUT /api/tags/{id}
+    @Operation(summary = "Update a tag", description = "Replaces a tag entirely.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Tag updated successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "404", description = "Tag not found or not owned by user")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<Tag> updateTag(
+            @PathVariable Long id,
+            @RequestBody Tag updated,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        User owner = currentUser(jwt);
+
+        Tag tag = tagRepository.findById(id).orElse(null);
+        if (tag == null || tag.getOwner() == null ||
+                !tag.getOwner().getId().equals(owner.getId())) {
+            return ResponseEntity.notFound().build();
+        }
+
+        tag.setName(updated.getName());
+
+        return ResponseEntity.ok(tagRepository.save(tag));
+    }
+
   @Operation(summary = "Get tag by ID", description = "Returns a tag by ID. Returns 404 if not found or owned by another user.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Tag returned successfully"),

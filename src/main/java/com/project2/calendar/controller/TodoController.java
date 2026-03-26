@@ -72,17 +72,17 @@ public class TodoController {
         return ResponseEntity.ok(todoRepository.save(todo));
     }
 
-    // PATCH /api/todos/{id}
-    @Operation(summary = "Update a todo", description = "Partially updates a todo. Accepts `completed` (boolean) and/or `text` (string).")
+    // PUT /api/todos/{id}
+    @Operation(summary = "Update a todo", description = "Replaces a todo entirely. Requires `text`, `completed`, and `date`.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Todo updated successfully"),
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "404", description = "Todo not found or not owned by user")
     })
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Todo> updateTodo(
             @PathVariable Long id,
-            @RequestBody Map<String, Object> updates,
+            @RequestBody Todo updated,
             @AuthenticationPrincipal Jwt jwt
     ) {
         User owner = currentUser(jwt);
@@ -92,12 +92,9 @@ public class TodoController {
             return ResponseEntity.notFound().build();
         }
 
-        if (updates.containsKey("completed")) {
-            todo.setCompleted((Boolean) updates.get("completed"));
-        }
-        if (updates.containsKey("text")) {
-            todo.setText((String) updates.get("text"));
-        }
+        todo.setText(updated.getText());
+        todo.setCompleted(updated.isCompleted());
+        todo.setDate(updated.getDate());
 
         return ResponseEntity.ok(todoRepository.save(todo));
     }

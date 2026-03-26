@@ -31,6 +31,24 @@ public class CalendarController {
         return ResponseEntity.ok(saved);
     }
 
+    // PUT /api/calendars/{id}
+    @Operation(summary = "Update a calendar", description = "Replaces a calendar entirely.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Calendar updated successfully"),
+        @ApiResponse(responseCode = "404", description = "Calendar not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<Calendar> updateCalendar(
+            @PathVariable Long id,
+            @RequestBody Calendar updated
+    ) {
+        Calendar calendar = calendarService.getCalendarById(id);
+        calendar.setOwner(updated.getOwner());
+        Calendar saved = calendarService.createCalendar(calendar);
+        return ResponseEntity.ok(saved);
+    }
+
+
     @Operation(summary = "Get all calendars", description = "Returns all calendars in the system.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "List returned successfully")
